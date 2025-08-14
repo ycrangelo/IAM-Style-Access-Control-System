@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-const JWT_SECRET = "your_super_secret_key"; // same as login
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function authenticateJWT(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -8,7 +8,7 @@ export function authenticateJWT(req, res, next) {
   const token = authHeader.split(" ")[1]; // Bearer <token>
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload; // attach user info to request
+    req.user = payload; 
     next();
   } catch {
     return res.status(403).json({ error: "Invalid or expired token" });

@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.db"
+}
+
+// -----------------------------
+// Enums
+// -----------------------------
+enum Action {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+}
+
+// -----------------------------
+// Core Models
+// -----------------------------
+model User {
+  id         Int          @id @default(autoincrement())
+  username      String       @unique
+  passwordHash String
+  createdAt  DateTime     @default(now())
+  // memberships
+  //like every user ay may group
+  groupLinks GroupUser[]
+
+  @@index([username])
+}
+
+model Group {
+  id         Int           @id @default(autoincrement())
+  name       String        @unique
+  createdAt  DateTime      @default(now())
+  // members and roles
+  //every group ay may user
+  userLinks  GroupUser[]
+  // at every group ay may role
+  roleLinks  GroupRole[]
+}
+
+model Role {
+  id             Int               @id @default(autoincrement())
+  name           String            @unique
+  createdAt      DateTime          @default(now())
+  // permission links and group links
+  permissionLinks RolePermission[]
+  groupLinks      GroupRole[]
+}
+
+//business area which is kong saan or like ano yung area ng tao na yon
+//kong user ba ganon or admin
+model Module {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String?
+  // the CRUD permissions that exist for this module
+  //kong ano yung mga permissions like crud nga
+  permissions Permission[]
+}
+
+//permission kong ano pwede gawin ng user na yon
+model Permission {
+  id        Int     @id @default(autoincrement())
+  moduleId  Int
+  //naka enums pre nasa taas
+  action    Action
+  //linking na sa every module may may permission sila
+  module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roleLinks RolePermission[]
+
+  // A module can only have one of each action
+  @@unique([moduleId, action])
+  @@index([moduleId, action])
+}
+
+// -----------------------------
+// Join Models (link tables)
+// -----------------------------
+// malalaman kong anong group kasali si user
+model GroupUser {
+  // users assigned to groups
+  groupId Int
+  userId  Int
+
+  //relating lang like connecting lang ng group to user, user to group
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user    User  @relation(fields: [userId],  references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([groupId, userId])
+  @@index([userId])
+}
+// malalaman kong kong ano mga role sa isang group
+model GroupRole {
+  // roles assigned to groups
+  groupId Int
+  roleId  Int
+
+  group   Group @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role    Role  @relation(fields: [roleId],  references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([groupId, roleId])
+  @@index([roleId])
+}
+// malalaman kong kong ano mga role sa isang group
+model RolePermission {
+  // permissions assigned to roles
+  roleId       Int
+  permissionId Int
+
+  role        Role       @relation(fields: [roleId],       references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission  Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}

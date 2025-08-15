@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Button, Card, Spinner, Badge } from "flowbite-react";
 import React, { useEffect, useState } from "react";
+import Navbarr from "../components/navbar";
 
 type Permission = {
   module: string;
@@ -66,6 +67,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col items-center min-h-screen gap-4 p-4">
+      <Navbarr/>
       <h1 className="text-3xl font-bold mb-4">Dashboard - My Permissions</h1>
 
       {notification && (

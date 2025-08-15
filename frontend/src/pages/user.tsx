@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "flowbite-react";
+import Navbarr from "../components/navbar";
 
 // Define TypeScript interfaces
 interface Group {
@@ -175,6 +176,7 @@ const User = () => {
 
   return (
     <div className="p-4">
+      <Navbarr />
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">User Management</h1>
         <Button onClick={handleCreateClick}>Add New User</Button>

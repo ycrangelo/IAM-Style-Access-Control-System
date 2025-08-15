@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
-//components
+// Components
 import App from './App';
 import Dashboard from './pages/dashboard';
 import Login from './pages/login';
@@ -24,16 +24,50 @@ const ProtectedRoute = ({ children }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path='/' element={<App />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/dashboard' element={<Dashboard />} />
-      <Route path='/group' element={<Group />} />
-      <Route path='/module' element={<Module />} />
-      <Route path='/permission' element={<Permission />} />
-      <Route path='/role' element={<Role />} />
-      <Route path='/user' element={<User />} />
+      <Route path="/" element={<App />} />
+      <Route path="/login" element={<Login />} />
+      
+      {/* Protected Routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/user" element={
+        <ProtectedRoute>
+          <User />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/role" element={
+        <ProtectedRoute>
+          <Role />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/group" element={
+        <ProtectedRoute>
+          <Group />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/module" element={
+        <ProtectedRoute>
+          <Module />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/permission" element={
+        <ProtectedRoute>
+          <Permission />
+        </ProtectedRoute>
+      } />
+      
+      {/* Catch-all route */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 };
 
-export default AppRoutes
+export default AppRoutes;

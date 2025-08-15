@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Label, TextInput, Card, Radio } from "flowbite-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Navbarr from "../components/navbar";
 
 export default function Login() {
    const navigate = useNavigate();

@@ -17,6 +17,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "flowbite-react";
+import Navbarr from "../components/navbar";
 
 interface User {
   id: number;
@@ -209,6 +210,7 @@ const Group = () => {
 
   return (
     <div className="p-4">
+      <Navbarr/>
       {/* Success/Error Alerts */}
       {success && (
         <Alert

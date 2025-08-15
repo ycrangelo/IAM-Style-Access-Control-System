@@ -17,6 +17,7 @@ import {
   TextInput,
   Label,
 } from "flowbite-react";
+import Navbarr from "../components/navbar";
 
 interface Permission {
   id: number;
@@ -140,6 +141,7 @@ const Module = () => {
 
   return (
     <div className="p-4">
+      <Navbarr />
       {success && (
         <Alert
           color="success"

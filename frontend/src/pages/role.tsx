@@ -18,6 +18,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "flowbite-react";
+import Navbarr from "../components/navbar";
 
 interface Permission {
   id: number;
@@ -199,6 +200,7 @@ const Role = () => {
 
   return (
     <div className="p-4">
+      <Navbarr />
       {/* Success/Error Alerts */}
       {success && (
         <Alert

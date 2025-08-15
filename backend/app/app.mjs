@@ -8,6 +8,7 @@ import groupRoutes from '../app/routes/group/groupRoutes.mjs'
 import roleRoutes from './routes/role/roleRoutes.mjs'
 import moduleRoutes from './routes/module/moduleRoutes.mjs'
 import permissionRoutes from './routes/permission/permissionRoutes.mjs'
+import accessControlRoutes from './routes/accessControl/accessControlRoutes.mjs'
 
 
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/user', UserRoutes)
 app.use('/api/group', groupRoutes)
 app.use('/api/role', roleRoutes)
 app.use('/api/module', moduleRoutes)
-app.use('/api/permission',permissionRoutes)
+app.use('/api/permission', permissionRoutes)
+app.use('/api/accessControl',accessControlRoutes)
 
 export default app

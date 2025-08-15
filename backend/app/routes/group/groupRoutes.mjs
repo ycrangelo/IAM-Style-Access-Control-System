@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { create, remove, get, edit } from "../../controller/user/userController.mjs";
+import { create, edit, get, remove, asignUserGroup } from "../../controller/group/groupController.mjs";
 import { authenticateJWT } from "../../middlewares/authenticateJWT.mjs";
 const router = Router()
 
@@ -10,5 +10,6 @@ router.get("/get", get)
 router.delete("/delete/:id", remove)
 router.post("/post", create)
 router.put("/edit/:id", edit)
+router.post("/:groupId/users", asignUserGroup)
 
 export default router;

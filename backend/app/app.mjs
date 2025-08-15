@@ -4,6 +4,7 @@ import cors from 'cors'
 import authenticationRoutes from '../app/routes/authentication/authenticationRoutes.mjs'
 import { authenticateJWT } from '../app/middlewares/authenticateJWT.mjs';
 import UserRoutes from '../app/routes/user/userRoutes.mjs'
+import groupRoutes from '../app/routes/group/groupRoutes.mjs'
 
 
 const app = express();
@@ -19,6 +20,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use('/api/auth', authenticationRoutes);
-app.use('/api/user',UserRoutes)
+app.use('/api/user', UserRoutes)
+app.use('/api/group',groupRoutes)
 
 export default app

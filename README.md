@@ -27,3 +27,20 @@ This project is a simplified Identity and Access Management (IAM) system designe
 - **Tailwind CSS** for styling
 - JWT stored in Redux store or `localStorage` for session management
 
+### Demo Video
+https://github.com/user-attachments/assets/a4772196-4a1e-4714-93f6-df19fbc9263f
+
+
+
+### How to use
+
+## backend
+-run pnpm i
+-set your .env
+  -add your DATABASE_URL and JWT_SECRET
+-run npx prisma generate and npx prisma db push
+-run npm run dev
+
+## frontend
+-run pnpm i
+-run npm run dev

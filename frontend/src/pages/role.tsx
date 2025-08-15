@@ -50,13 +50,17 @@ const Role = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+
   const [currentRole, setCurrentRole] = useState<Role | null>(null);
+
   const [formData, setFormData] = useState({
     name: "",
   });
+
   const [assignData, setAssignData] = useState({
     groupId: "",
   });
@@ -90,6 +94,16 @@ const Role = () => {
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setAssignData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleCreateClick = () => {
     setFormData({ name: "" });
     setShowCreateModal(true);
@@ -107,16 +121,6 @@ const Role = () => {
     setShowAssignModal(true);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setAssignData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleCreateSubmit = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -129,10 +133,8 @@ const Role = () => {
       );
 
       setSuccess("Role created successfully");
-      setTimeout(() => {
-        setShowCreateModal(false);
-        fetchData();
-      }, 1000);
+      setShowCreateModal(false);
+      fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create role");
     }
@@ -150,10 +152,8 @@ const Role = () => {
       );
 
       setSuccess("Role updated successfully");
-      setTimeout(() => {
-        setShowEditModal(false);
-        fetchData();
-      }, 1000);
+      setShowEditModal(false);
+      fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update role");
     }
@@ -171,10 +171,8 @@ const Role = () => {
       );
 
       setSuccess("Role assigned to group successfully");
-      setTimeout(() => {
-        setShowAssignModal(false);
-        fetchData();
-      }, 1000);
+      setShowAssignModal(false);
+      fetchData();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to assign role");
     }
@@ -255,24 +253,33 @@ const Role = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {role.permissionLinks.map((link) => (
-                      <Badge key={link.permission.id} color="purple">
-                        {link.permission.module.name}:{link.permission.action}
-                      </Badge>
-                    ))}
+                    {role.permissionLinks?.length ? (
+                      role.permissionLinks.map((link) => (
+                        <Badge key={link.permission.id} color="purple">
+                          {link.permission.module?.name}:
+                          {link.permission.action}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge color="gray">No permissions</Badge>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {role.groupLinks.map((link) => (
-                      <Badge key={link.group.id} color="info">
-                        {link.group.name}
-                      </Badge>
-                    ))}
+                    {role.groupLinks?.length ? (
+                      role.groupLinks.map((link) => (
+                        <Badge key={link.group.id} color="info">
+                          {link.group.name}
+                        </Badge>
+                      ))
+                    ) : (
+                      <Badge color="gray">No groups</Badge>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex gap-2">
                     <Button size="xs" onClick={() => handleEditClick(role)}>
                       Edit
                     </Button>

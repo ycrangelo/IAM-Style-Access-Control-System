@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Button, Card, Spinner } from "flowbite-react";
+import { Button, Card, Spinner, Badge } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 
 type Permission = {
@@ -16,36 +16,29 @@ export default function Dashboard() {
     const fetchPermissions = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);
-        
         if (!token) {
           throw new Error("No token found, please login.");
         }
-        
-        // Validate token format (basic check)
-        if (typeof token !== 'string' || token.trim() === '') {
-          throw new Error("Invalid token format, please login again.");
-        }
 
         const res = await axios.get(
-          "http://localhost:3000/api/accessControl/me/getMyPermissions"
+          "http://localhost:3000/api/accessControl/me/getMyPermissions",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            validateStatus: (status) => status < 500,
+          }
         );
 
-        console.log("API Response:", res.data);
         setPermissions(res.data.permissions || []);
       } catch (err: any) {
-        console.error("Error details:", err);
-        console.error("Response data:", err.response?.data);
-        console.error("Response status:", err.response?.status);
-        
-        if (err.response?.status === 401) {
-          setNotification("loading");
-          // Optionally redirect to login
-          // window.location.href = '/login';
-        } else {
-          setNotification(err.response?.data?.error || err.message || "Failed to load permissions");
-        }
-        
+        console.error("Error:", err);
+        setNotification(
+          err.response?.data?.error ||
+            err.message ||
+            "Failed to load permissions"
+        );
         setTimeout(() => setNotification(""), 5000);
       } finally {
         setLoading(false);
@@ -55,17 +48,17 @@ export default function Dashboard() {
     fetchPermissions();
   }, []);
 
-  const simulateAction = (module: string, action: string) => {
-    const allowed = permissions.some(
-      (p) => p.module === module && p.action === action
-    );
+  const hasPermission = (module: string, action: string) => {
+    return permissions.some((p) => p.module === module && p.action === action);
+  };
 
+  const simulateAction = (module: string, action: string) => {
+    const allowed = hasPermission(module, action);
     setNotification(
       allowed
-        ? `✅ You are allowed to ${action} on ${module}`
-        : `❌ You are NOT allowed to ${action} on ${module}`
+        ? `✅ You have permission to ${action} on ${module} module`
+        : `❌ You don't have permission to ${action} on ${module} module`
     );
-
     setTimeout(() => setNotification(""), 3000);
   };
 
@@ -75,16 +68,16 @@ export default function Dashboard() {
     <div className="flex flex-col items-center min-h-screen gap-4 p-4">
       <h1 className="text-3xl font-bold mb-4">Dashboard - My Permissions</h1>
 
-      {/* Debug Information */}
-      {/* <div className="bg-gray-100 p-4 rounded-lg w-full max-w-md text-sm">
-        <h3 className="font-semibold mb-2">Debug Info:</h3>
-        <p>Token exists: {localStorage.getItem("token") ? "Yes" : "No"}</p>
-        <p>Token length: {localStorage.getItem("token")?.length || 0}</p>
-        <p>Token preview: {localStorage.getItem("token")?.substring(0, 20) || "None"}...</p>
-      </div> */}
-
       {notification && (
-        <div className="bg-gray-100 text-black p-2 rounded">{notification}</div>
+        <div
+          className={`p-3 rounded-lg w-full max-w-md text-center ${
+            notification.includes("✅")
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {notification}
+        </div>
       )}
 
       {loading ? (
@@ -93,28 +86,46 @@ export default function Dashboard() {
           <span className="ml-2">Loading permissions...</span>
         </div>
       ) : modules.length === 0 ? (
-        <p className="text-gray-500 mt-10">No permissions available</p>
+        <Card className="w-full max-w-md text-center">
+          <p className="text-gray-500">
+            No permissions available for your account
+          </p>
+        </Card>
       ) : (
-        modules.map((mod) => (
-          <Card key={mod} className="w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-2">{mod}</h2>
-            <div className="flex gap-2 flex-wrap">
-              {["CREATE", "READ", "UPDATE", "DELETE"].map((action) => (
-                <Button
-                  key={action}
-                  size="sm"
-                  onClick={() => simulateAction(mod, action)}
-                  color={
-                    permissions.some(
-                      (p) => p.module === mod && p.action === action
-                    )
-                      ? "success"
-                      : "gray"
-                  }
-                >
-                  {action}
-                </Button>
-              ))}
+        modules.map((module) => (
+          <Card key={module} className="w-full max-w-md">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-xl font-semibold">Module: {module}</h2>
+              <Badge color="info">
+                {permissions.filter((p) => p.module === module).length}{" "}
+                permissions
+              </Badge>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="font-medium">Available Actions:</h3>
+              <div className="flex gap-2 flex-wrap">
+                {["CREATE", "READ", "UPDATE", "DELETE"].map((action) => {
+                  const hasPerm = hasPermission(module, action);
+                  return (
+                    <Button
+                      key={action}
+                      size="sm"
+                      onClick={() => simulateAction(module, action)}
+                      color={hasPerm ? "success" : "failure"}
+                      className={hasPerm ? "" : "opacity-70"}
+                      title={
+                        hasPerm
+                          ? `You can ${action} in ${module}`
+                          : `You cannot ${action} in ${module}`
+                      }
+                    >
+                      {action}
+                      {hasPerm && <span className="ml-1">✓</span>}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
           </Card>
         ))
